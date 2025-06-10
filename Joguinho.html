@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menina Pula Motos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #cceeff; font-family: sans-serif; overflow: hidden; }
+    canvas { background: #87ceeb; display: block; margin: auto; }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="300"></canvas>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const girlImg = new Image();
+  girlImg.src = 'https://thumbs.dreamstime.com/b/noiva-da-arte-do-pixel-vetor-126610362.jpg'; // menina pixel
+
+  const motoImg = new Image();
+  motoImg.src = 'https://static.vecteezy.com/ti/vetor-gratis/p1/10654629-moto-scooter-com-pixel-art-ilustracaoial-gratis-vetor.jpg'; // moto pixel
+
+  let girl = { x: 50, y: 220, width: 50, height: 50, dy: 0, jumping: false };
+  let motos = [];
+  let score = 0;
+  let jumpedMotos = 0;
+  let gameOver = false;
+
+  function drawGirl() {
+    ctx.drawImage(girlImg, girl.x, girl.y, girl.width, girl.height);
+  }
+
+  function drawMoto(moto) {
+    ctx.drawImage(motoImg, moto.x, moto.y, moto.width, moto.height);
+  }
+
+  function spawnMoto() {
+    motos.push({ x: canvas.width, y: 240, width: 50, height: 50 });
+  }
+
+  function update() {
+    if (gameOver) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // chão
+    ctx.fillStyle = '#228B22';
+    ctx.fillRect(0, 270, canvas.width, 30);
+
+    // menina
+    if (girl.jumping) {
+      girl.dy += 1.5; // gravidade
+      girl.y += girl.dy;
+      if (girl.y >= 220) {
+        girl.y = 220;
+        girl.dy = 0;
+        girl.jumping = false;
+      }
+    }
+    drawGirl();
+
+    // motos
+    for (let i = 0; i < motos.length; i++) {
+      motos[i].x -= 5;
+      drawMoto(motos[i]);
+
+      // colisão
+      if (
+        girl.x < motos[i].x + motos[i].width &&
+        girl.x + girl.width > motos[i].x &&
+        girl.y < motos[i].y + motos[i].height &&
+        girl.y + girl.height > motos[i].y
+      ) {
+        gameOver = true;
+        alert('Game Over!');
+        return;
+      }
+
+      // passou a moto
+      if (motos[i].x + motos[i].width < girl.x && !motos[i].counted) {
+        jumpedMotos++;
+        motos[i].counted = true;
+        if (jumpedMotos >= 1) {
+          window.location.href = 'pedido.html';
+          gameOver = true;
+          return;
+        }
+      }
+    }
+
+    // remover motos fora da tela
+    motos = motos.filter(m => m.x + m.width > 0);
+
+    // placar
+    ctx.fillStyle = '#000';
+    ctx.font = '20px Arial';
+    ctx.fillText('Pulos: ' + jumpedMotos + '/5', 10, 25);
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.code === 'Space' && !girl.jumping) {
+      girl.dy = -20;
+      girl.jumping = true;
+    }
+  });
+
+  setInterval(() => {
+    if (!gameOver) update();
+  }, 30);
+
+  setInterval(() => {
+    if (!gameOver) spawnMoto();
+  }, 2000);
+</script>
+</body>
+</html>
