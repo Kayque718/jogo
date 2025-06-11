@@ -53,7 +53,8 @@
   <div id="quiz"></div>
   <div id="final" class="pergunta">
     <p>Preparada para a última pergunta?</p>
-    <button onclick="window.location.href='pedido.html'">Sim</button>
+    <button onclick="iniciarContagemFinal()">Sim</button>
+    <p id="contador"></p>
   </div>
   <script>
     const perguntas = [
@@ -163,6 +164,20 @@
         msg.appendChild(document.createElement('br'));
         msg.appendChild(btnReset);
       }
+    }
+
+    function iniciarContagemFinal() {
+      const contador = document.getElementById('contador');
+      let tempo = 5;
+      contador.textContent = `Redirecionando em ${tempo} segundos...`;
+      const intervalo = setInterval(() => {
+        tempo--;
+        contador.textContent = `Redirecionando em ${tempo} segundos...`;
+        if (tempo === 0) {
+          clearInterval(intervalo);
+          window.location.href = 'pedido.html';
+        }
+      }, 1000);
     }
 
     mostrarPergunta();
