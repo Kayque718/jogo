@@ -3,31 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menina Pula Motos</title>
+  <title>Alice Motoqueira</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #cceeff; font-family: sans-serif; overflow: hidden; }
-    canvas { background: #87ceeb; display: block; margin: auto; }
+    body, html { width: 100%; height: 100%; background: #cceeff; font-family: sans-serif; }
+
+    #gameContainer {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #87ceeb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      background: #87ceeb;
+      max-width: 100%;
+      height: auto;
+    }
+
+    #startScreen, #gameOverScreen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #ff69b4;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e55aa3;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .start-images {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .start-img {
+      max-width: 40%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 <body>
-<canvas id="gameCanvas" width="800" height="300"></canvas>
+<div id="gameContainer">
+  <div id="startScreen">
+    <h1>Alice Motoqueira</h1>
+    <div class="start-images">
+      <img src="Alice.jpg" alt="Menina" class="start-img">
+      <img src="HondaBiz.jpg" alt="Moto" class="start-img">
+    </div>
+    <p>Toque na tela ou pressione espaço para pular!</p>
+    <button onclick="startGame()">Iniciar Jogo</button>
+  </div>
+
+  <canvas id="gameCanvas" width="800" height="300"></canvas>
+
+  <div id="gameOverScreen" style="display: none;">
+    <h1>Game Over!</h1>
+    <button onclick="restartGame()">Reiniciar</button>
+  </div>
+</div>
 
 <script>
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
   const girlImg = new Image();
-  girlImg.src = 'https://thumbs.dreamstime.com/b/noiva-da-arte-do-pixel-vetor-126610362.jpg'; // menina pixel
+  girlImg.src = 'Alice.jpg';
 
   const motoImg = new Image();
-  motoImg.src = 'https://static.vecteezy.com/ti/vetor-gratis/p1/10654629-moto-scooter-com-pixel-art-ilustracaoial-gratis-vetor.jpg'; // moto pixel
+  motoImg.src = 'HondaBiz.jpg';
 
-  let girl = { x: 50, y: 220, width: 50, height: 50, dy: 0, jumping: false };
-  let motos = [];
-  let score = 0;
-  let jumpedMotos = 0;
-  let gameOver = false;
+  let girl, motos, score, jumpedMotos, gameOver, gameLoop, motoSpawner;
+
+  function resetGame() {
+    girl = { x: 50, y: 220, width: 50, height: 50, dy: 0, jumping: false };
+    motos = [];
+    score = 0;
+    jumpedMotos = 0;
+    gameOver = false;
+  }
 
   function drawGirl() {
     ctx.drawImage(girlImg, girl.x, girl.y, girl.width, girl.height);
@@ -52,7 +141,7 @@
 
     // menina
     if (girl.jumping) {
-      girl.dy += 1.5; // gravidade
+      girl.dy += 1.5;
       girl.y += girl.dy;
       if (girl.y >= 220) {
         girl.y = 220;
@@ -74,24 +163,21 @@
         girl.y < motos[i].y + motos[i].height &&
         girl.y + girl.height > motos[i].y
       ) {
-        gameOver = true;
-        alert('Game Over!');
+        endGame();
         return;
       }
 
-      // passou a moto
       if (motos[i].x + motos[i].width < girl.x && !motos[i].counted) {
         jumpedMotos++;
         motos[i].counted = true;
-        if (jumpedMotos >= 1) {
-          window.location.href = 'pedido.html';
+        if (jumpedMotos >= 5) {
+          window.location.href = 'quiz.html';
           gameOver = true;
           return;
         }
       }
     }
 
-    // remover motos fora da tela
     motos = motos.filter(m => m.x + m.width > 0);
 
     // placar
@@ -100,20 +186,60 @@
     ctx.fillText('Pulos: ' + jumpedMotos + '/5', 10, 25);
   }
 
-  document.addEventListener('keydown', function (e) {
-    if (e.code === 'Space' && !girl.jumping) {
+  function endGame() {
+    gameOver = true;
+    clearInterval(gameLoop);
+    clearInterval(motoSpawner);
+    document.getElementById('gameOverScreen').style.display = 'flex';
+  }
+
+  function jump() {
+    if (!girl.jumping) {
       girl.dy = -20;
       girl.jumping = true;
     }
+  }
+
+  function startGame() {
+    resetGame();
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('gameOverScreen').style.display = 'none';
+    gameLoop = setInterval(update, 30);
+    motoSpawner = setInterval(spawnMoto, 2000);
+  }
+
+  function restartGame() {
+    startGame();
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.code === 'Space') jump();
   });
 
-  setInterval(() => {
-    if (!gameOver) update();
-  }, 30);
+  document.addEventListener('touchstart', function () {
+    jump();
+  });
 
-  setInterval(() => {
-    if (!gameOver) spawnMoto();
-  }, 2000);
+  // Responsividade do canvas
+  function resizeCanvas() {
+    const ratio = 800 / 300;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    let newWidth = width;
+    let newHeight = width / ratio;
+
+    if (newHeight > height) {
+      newHeight = height;
+      newWidth = height * ratio;
+    }
+
+    canvas.style.width = newWidth + 'px';
+    canvas.style.height = newHeight + 'px';
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('load', resizeCanvas);
 </script>
 </body>
 </html>

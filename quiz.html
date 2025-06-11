@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz de Perguntas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      background: linear-gradient(135deg, #1e1e2f, #2e2e4f);
+      color: #f0f0f0;
+    }
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+    }
+    .pergunta {
+      display: none;
+      background-color: #2e2e4f;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .visivel {
+      display: block;
+    }
+    .mensagem {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #8b0000;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #a40000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo de Perguntas</h1>
+  <div id="quiz"></div>
+  <div id="final" class="pergunta">
+    <p>Preparada para a última pergunta?</p>
+    <button onclick="window.location.href='pedido.html'">Sim</button>
+  </div>
+  <script>
+    const perguntas = [
+      {
+        texto: '1. Quantos planetas Terra cabem dentro do Sol?',
+        alternativas: ['Um milhão', 'Cem', 'Seiscentos', 'Cento e cinquenta'],
+        correta: 0
+      },
+      {
+        texto: '2. Em que lugar vivem mais cangurus do que pessoas?',
+        alternativas: ['Indonésia', 'Nova Zelândia', 'Austrália', 'Papua-Nova Guiné'],
+        correta: 2
+      },
+      {
+        texto: '3. Quantos olhos a maior parte das aranhas têm?',
+        alternativas: ['Dois', 'Quatro', 'Quatro pares', 'Seis'],
+        correta: 2
+      },
+      {
+        texto: '4. O que mede a Escala Mercalli?',
+        alternativas: ['A intensidade dos ventos', 'A intensidade sísmica de acordo com os danos provocados', 'A resistência dos minerais', 'A magnitude de um terremoto'],
+        correta: 1
+      },
+      {
+        texto: '5. Qual das alternativas contém apenas nomes de rios?',
+        alternativas: ['São Francisco, Douro, Antártico', 'Nilo, Amazonas, Mississipi', 'Cáspio, Vermelho, Reno', 'Tocantins, Bering, Ganges'],
+        correta: 1
+      },
+      {
+        texto: '6. Quanto mede uma girafa?',
+        alternativas: ['Entre 4,8 e 5,5 metros', '2 metros', 'Entre 5 e 6 metros', '2,5 metros'],
+        correta: 0
+      },
+      {
+        texto: '7. Qual a ciência que estuda a atmosfera da Terra e a climatologia?',
+        alternativas: ['Astronomia', 'Metereologia', 'Dispersão atmosférica', 'Meteorologia'],
+        correta: 1
+      },
+      {
+        texto: '8. Quantos braços tem um polvo?',
+        alternativas: ['Seis', 'Oito', 'Dez', 'Sete'],
+        correta: 1
+      },
+      {
+        texto: '9. Nesses pares, ambos são mamíferos:',
+        alternativas: ['Baleia azul e golfinhos', 'Morcegos e galinhas', 'Girafas e tartarugas', 'Porcos e pinguins'],
+        correta: 0
+      }
+    ];
+
+    let indiceAtual = 0;
+
+    const quiz = document.getElementById('quiz');
+
+    function mostrarPergunta() {
+      quiz.innerHTML = '';
+      const p = perguntas[indiceAtual];
+      const div = document.createElement('div');
+      div.className = 'pergunta visivel';
+
+      const titulo = document.createElement('p');
+      titulo.textContent = p.texto;
+      div.appendChild(titulo);
+
+      p.alternativas.forEach((alt, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = alt;
+        btn.onclick = () => verificarResposta(i);
+        div.appendChild(btn);
+      });
+
+      const msg = document.createElement('div');
+      msg.className = 'mensagem';
+      div.appendChild(msg);
+
+      quiz.appendChild(div);
+    }
+
+    function verificarResposta(indiceEscolhido) {
+      const correta = perguntas[indiceAtual].correta;
+      const div = document.querySelector('.pergunta');
+      const msg = div.querySelector('.mensagem');
+      msg.innerHTML = '';
+
+      if (indiceEscolhido === correta) {
+        const btnProx = document.createElement('button');
+        btnProx.textContent = 'Próxima pergunta';
+        btnProx.onclick = () => {
+          indiceAtual++;
+          if (indiceAtual < perguntas.length) {
+            mostrarPergunta();
+          } else {
+            quiz.innerHTML = '';
+            document.getElementById('final').classList.add('visivel');
+          }
+        };
+        msg.style.color = '#00ff99';
+        msg.innerHTML = 'Resposta correta!';
+        msg.appendChild(document.createElement('br'));
+        msg.appendChild(btnProx);
+      } else {
+        msg.style.color = '#ff4d4d';
+        msg.textContent = 'Você errou, tente novamente';
+        const btnReset = document.createElement('button');
+        btnReset.textContent = 'Tentar novamente';
+        btnReset.onclick = mostrarPergunta;
+        msg.appendChild(document.createElement('br'));
+        msg.appendChild(btnReset);
+      }
+    }
+
+    mostrarPergunta();
+  </script>
+</body>
+</html>
