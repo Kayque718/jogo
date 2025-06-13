@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contrato de Amor 💍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(to bottom, #ffe6f0, #ffffff);
+      margin: 0;
+      padding: 0;
+      display: flex; 
+      justify-content: center;
+    }
+    #conteudo-pdf {
+      padding: 30px;
+      max-width: 800px;
+      color: #5c3a3a;
+      background: white;
+      box-sizing: border-box;
+    }
+    h1 {
+      text-align: center;
+      font-family: 'Great Vibes', cursive;
+      font-size: 42px;
+      color: #b30059;
+    }
+    h2 {
+      color: #b30059;
+      margin-top: 30px;
+      font-size: 25px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    #resposta-registrada {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 30px;
+      color: #006600;
+    }
+    textarea {
+      width: 100%;
+      max-width: 300px;
+      font-family: 'Great Vibes', cursive;
+      font-size: 16px;
+      border: none;
+      border-bottom: 1px solid #5c3a3a;
+      background: transparent;
+      resize: none;
+      text-align: center;
+      color: #5c3a3a;
+      outline: none;
+      margin-top: 10px;
+    }
+    .assinaturas {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .assinatura {
+      margin-bottom: 40px;
+    }
+    #botao-topo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    #botao-topo button {
+      background-color: #ff6699;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+    .minutas {
+      font-size: 10px;
+      margin-top: 30px;
+      background: #fff0f8;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="conteudo-pdf">
+    <div id="botao-topo" class="no-print">
+      <button onclick="gerarPDF()">📄 Gerar PDF do Contrato</button>
+    </div>
+
+    <h1>Contrato de Amor e Parceria Vitalícia 💖</h1>
+    <p style="text-align:center;"><em>Celebração entre Kayque e Alice</em></p>
+    <hr />
+
+    <h2>Cláusula 1 – Do Amor Incondicional</h2>
+    <p>As partes concordam em manter o amor mútuo, mesmo nas manhãs de mau humor e nos dias de Wi‑Fi ruim.</p>
+
+    <h2>Cláusula 2 – Da Comida Compartilhada</h2>
+    <p>Fica estabelecido que batata frita será dividida meio a meio, salvo em situações de extremo desejo da Parte Alice.</p>
+
+    <h2>Cláusula 3 – Dos Futuros Sonhos</h2>
+    <p>As partes comprometem-se a construir um lar com amor, respeito e muitas risadas — e talvez um hamster.</p>
+
+    <h2>Cláusula 4 – Da Descendência</h2>
+    <p>Ambas as partes concordam que só deverão ter filhos no mínimo 6 anos após a assinatura deste contrato.</p>
+    <p>Ambas as partes concordam que, se vier uma filha, seu nome será <strong>Aurora</strong>, e se vier um filho, seu nome será <strong>Apolo</strong>.</p>
+
+    <h2>Cláusula 5 – Das Responsabilidades Domésticas</h2>
+    <p>O Kayque solicita que a louça suja seja de responsabilidade dele, desde que a Alice concorde em cuidar das roupas.</p>
+
+    <h2>Cláusula 6 – Do Silêncio Pós‑Briga</h2>
+    <p>Se o silêncio durar mais de 1 hora, será obrigatória uma partida de pedra, papel e tesoura (melhor de 3).</p>
+
+    <h2>Cláusula 7 – Do Fim do Dia</h2>
+    <p>Proibido dormir na sala após discussão ou sem resolver o desentendimento.</p>
+
+    <h2>Cláusula 8 – Da Consultoria Cromática</h2>
+    <p>Em caso de dúvida de cor por daltonismo do Kayque, a Alice prestará assistência cromática sincera e carinhosa.</p>
+
+    <h2>Cláusula 9 – Da Solenidade no “Sim”</h2>
+    <p>Durante a cerimônia oficial, o “Você aceita?” deve ser sério e apaixonado, sem piadas ou suspense desnecessário.</p>
+
+    <h2 style="color:darkred;">Cláusula Final – Do Pedido Solene</h2>
+    <p>Considerando tudo que vivemos, venho por meio deste contrato registrar o momento:</p>
+
+    <div id="resposta-registrada"></div>
+
+    <div class="assinaturas">
+      <div class="assinatura"><p><strong>Assinatura da Alice:</strong></p><textarea rows="2" placeholder="Assine aqui"></textarea></div>
+      <div class="assinatura"><p><strong>Assinatura do Kayque:</strong></p><textarea rows="2" placeholder="Assine aqui"></textarea></div>
+    </div>
+
+    <div class="minutas">
+      <p><span style="font-size: 10px;"><strong>Eu, Alice, concordo que o Kayque poderá:</strong></span></p>
+      <ul>
+        <li>Tomar todas as bebidas que eu não der conta.</li>
+        <li>Se negar a ir a até 4 rolês por mês.</li>
+        <li>Se encontrar com os amigos para jogar sinuca e vôlei.</li>
+        <li>Fazer uma viagem a trabalho a cada 4 meses.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function gerarPDF(){
+      const el = document.getElementById('conteudo-pdf');
+      html2pdf()
+        .set({
+          margin:       [0.3, 0.3, 0.3, 0.3],
+          filename:     'Contrato_de_Amor.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 1, useCORS: true },
+          jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+          pagebreak:    { mode: ['css'] }
+        })
+        .from(el)
+        .save();
+    }
+
+    // Mostrar a resposta da Alice (vinda do pedido.html)
+    const params = new URLSearchParams(window.location.search);
+    const resposta = params.get('resposta');
+    if (resposta) {
+      document.getElementById('resposta-registrada').innerHTML = `💍 Alice respondeu: <strong>${resposta}</strong> 💕`;
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pedido 💍</title>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(to bottom, #ffe6f0, #ffffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .pedido-container {
+      text-align: center;
+      color: #800040;
+    }
+    .pedido {
+      font-size: 32px;
+      margin-bottom: 40px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .botoes button {
+      background-color: #ff6699;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 30px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .botoes button:hover {
+      background-color: #e05588;
+    }
+    #botoes-secundarios {
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="pedido-container">
+    <div class="pedido">💍 Alice, você aceita se casar comigo?</div>
+
+    <div class="botoes" id="botoes-iniciais">
+      <button onclick="respostaDireta()">Aceito!</button>
+      <button onclick="mostrarAlternativas()">Não aceito!</button>
+    </div>
+
+    <div class="botoes" id="botoes-secundarios">
+      <button onclick="enviarResposta('Sim!')">Sim!</button>
+      <button onclick="enviarResposta('Com certeza!')">Com certeza!</button>
+      <button onclick="enviarResposta('Nem precisa perguntar, aceito!')">Nem precisa perguntar, aceito!</button>
+    </div>
+  </div>
+
+  <script>
+    function respostaDireta() {
+      window.location.href = `contrato.html?resposta=Sim!`;
+    }
+
+    function mostrarAlternativas() {
+      document.getElementById("botoes-iniciais").style.display = "none";
+      document.getElementById("botoes-secundarios").style.display = "block";
+    }
+
+    function enviarResposta(resposta) {
+      const encoded = encodeURIComponent(resposta);
+      window.location.href = `contrato.html?resposta=${encoded}`;
+    }
+  </script>
+</body>
+</html>
