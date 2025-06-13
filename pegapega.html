@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pegue os 💖</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      overflow: hidden;
+      padding: 0;
       background: linear-gradient(to bottom, #ffccd5, #ffe6f0);
       font-family: Arial, sans-serif;
+      overflow: hidden;
+      height: 100%;
     }
     #game {
       position: relative;
       width: 100vw;
-      height: 100vh;
       touch-action: none;
+      overflow: hidden;
     }
     #player {
       position: absolute;
@@ -43,6 +45,7 @@
       font-size: 20px;
       color: #d60061;
       font-weight: bold;
+      z-index: 10;
     }
   </style>
 </head>
@@ -61,6 +64,16 @@
     const scoreDisplay = document.getElementById('score');
     const heartSound = document.getElementById('heartSound');
     let score = 0;
+
+    // Define a altura real da tela
+    function adjustGameHeight() {
+      const height = window.innerHeight;
+      game.style.height = height + 'px';
+    }
+
+    window.addEventListener('resize', adjustGameHeight);
+    window.addEventListener('orientationchange', adjustGameHeight);
+    adjustGameHeight(); // chama ao carregar
 
     function spawnHeart() {
       const heart = document.createElement('div');
