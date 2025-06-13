@@ -108,8 +108,8 @@
   const motoImg = new Image();
   motoImg.src = 'HondaBiz.jpg';
 
-  const puloSound = new Audio('pulo.mp3');
-  const colisaoSound = new Audio('colisao.mp3');
+  const jumpSound = new Audio('pulo.mp3');
+  const crashSound = new Audio('colisao.mp3');
 
   let girl, motos, score, jumpedMotos, gameOver, gameLoop, motoSpawner;
 
@@ -162,7 +162,7 @@
         girl.y < motos[i].y + motos[i].height &&
         girl.y + girl.height > motos[i].y
       ) {
-        colisaoSound.play();
+        if (crashSound) crashSound.play();
         endGame();
         return;
       }
@@ -189,7 +189,6 @@
     gameOver = true;
     clearInterval(gameLoop);
     clearInterval(motoSpawner);
-    canvas.removeEventListener('touchstart', jump);
     document.getElementById('gameOverScreen').style.display = 'flex';
   }
 
@@ -197,7 +196,7 @@
     if (!girl.jumping) {
       girl.dy = -20;
       girl.jumping = true;
-      puloSound.play();
+      if (jumpSound) jumpSound.play();
     }
   }
 
@@ -205,7 +204,6 @@
     resetGame();
     document.getElementById('startScreen').style.display = 'none';
     document.getElementById('gameOverScreen').style.display = 'none';
-    canvas.addEventListener('touchstart', jump);
     gameLoop = setInterval(update, 30);
     motoSpawner = setInterval(spawnMoto, 2000);
   }
@@ -217,6 +215,11 @@
   document.addEventListener('keydown', function (e) {
     if (e.code === 'Space') jump();
   });
+
+  document.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    jump();
+  }, { passive: false });
 
   function resizeCanvas() {
     const ratio = 800 / 300;
