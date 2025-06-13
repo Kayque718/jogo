@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pegue os 💖</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #ffccd5, #ffe6f0);
+      font-family: Arial, sans-serif;
+    }
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    #player {
+      width: 60px;
+      height: 60px;
+      background: url('Alice.jpg') no-repeat center;
+      background-size: cover;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: left 0.1s linear;
+    }
+    .heart {
+      width: 40px;
+      height: 40px;
+      background: url('coração.jpg') no-repeat center;
+      background-size: contain;
+      position: absolute;
+    }
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+      color: #d60061;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="player"></div>
+    <div id="score">Corações: 0</div>
+  </div>
+
+  <script>
+    const player = document.getElementById('player');
+    const game = document.getElementById('game');
+    const scoreDisplay = document.getElementById('score');
+    let score = 0;
+
+    function spawnHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left = Math.random() * (window.innerWidth - 40) + 'px';
+      heart.style.top = '-50px';
+      game.appendChild(heart);
+
+      let fallInterval = setInterval(() => {
+        let top = parseFloat(heart.style.top);
+        heart.style.top = top + 3 + 'px';
+
+        const heartRect = heart.getBoundingClientRect();
+        const playerRect = player.getBoundingClientRect();
+
+        if (
+          heartRect.bottom > playerRect.top &&
+          heartRect.top < playerRect.bottom &&
+          heartRect.left < playerRect.right &&
+          heartRect.right > playerRect.left
+        ) {
+          score++;
+          scoreDisplay.textContent = `Corações: ${score}`;
+          heart.remove();
+          clearInterval(fallInterval);
+
+          if (score >= 10) {
+            window.location.href = "corrida.html";
+          }
+        }
+
+        if (top > window.innerHeight) {
+          heart.remove();
+          clearInterval(fallInterval);
+        }
+      }, 20);
+    }
+
+    setInterval(spawnHeart, 1000);
+
+    // Controle por toque
+    game.addEventListener('touchmove', e => {
+      const touch = e.touches[0];
+      player.style.left = touch.clientX - 30 + 'px';
+    });
+  </script>
+</body>
+</html>
