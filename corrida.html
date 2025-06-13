@@ -193,6 +193,7 @@
   }
 
   function jump() {
+    console.log('Jump function called');
     if (!girl.jumping) {
       girl.dy = -20;
       girl.jumping = true;
@@ -216,8 +217,9 @@
     if (e.code === 'Space') jump();
   });
 
-  document.addEventListener('touchstart', function (e) {
+  canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
+    console.log('Touch event triggered');
     jump();
   }, { passive: false });
 
