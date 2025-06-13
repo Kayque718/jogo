@@ -18,16 +18,16 @@
       touch-action: none;
     }
     #player {
-      width: 80px;
-      height: 100px;
-      background: url('alicepega.png') no-repeat center;
-      background-size: contain;
-      background-position: center bottom;
       position: absolute;
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
       transition: left 0.1s linear;
+    }
+    #player img {
+      width: 80px;
+      height: auto;
+      max-height: 100px;
     }
     .heart {
       width: 40px;
@@ -48,7 +48,9 @@
 </head>
 <body>
   <div id="game">
-    <div id="player"></div>
+    <div id="player">
+      <img src="alicepega.png" alt="Personagem">
+    </div>
     <div id="score">Corações: 0</div>
     <audio id="heartSound" src="somcoração.mp3" preload="auto"></audio>
   </div>
@@ -85,7 +87,6 @@
           heart.remove();
           clearInterval(fallInterval);
 
-          // Tocar som
           heartSound.currentTime = 0;
           heartSound.play();
 
