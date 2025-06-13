@@ -1,105 +1,247 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pegue os 💖</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alice Motoqueira</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: linear-gradient(to bottom, #ffccd5, #ffe6f0);
-      font-family: Arial, sans-serif;
-    }
-    #game {
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; background: #cceeff; font-family: sans-serif; }
+
+    #gameContainer {
       position: relative;
-      width: 100vw;
+      width: 100%;
       height: 100vh;
+      overflow: hidden;
+      background: #87ceeb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    #player {
-      width: 60px;
-      height: 60px;
-      background: url('Alice.jpg') no-repeat center;
-      background-size: cover;
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: left 0.1s linear;
+
+    canvas {
+      background: #87ceeb;
+      max-width: 100%;
+      height: auto;
     }
-    .heart {
-      width: 40px;
-      height: 40px;
-      background: url('coração.jpg') no-repeat center;
-      background-size: contain;
+
+    #startScreen, #gameOverScreen {
       position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
     }
-    #score {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 20px;
-      color: #d60061;
-      font-weight: bold;
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #ff69b4;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e55aa3;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .start-images {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .start-img {
+      max-width: 40%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
-  <div id="game">
-    <div id="player"></div>
-    <div id="score">Corações: 0</div>
+<div id="gameContainer">
+  <div id="startScreen">
+    <h1>Alice Motoqueira</h1>
+    <div class="start-images">
+      <img src="Alice.jpg" alt="Menina" class="start-img">
+      <img src="HondaBiz.jpg" alt="Moto" class="start-img">
+    </div>
+    <p>Toque na tela ou pressione espaço para pular!</p>
+    <button onclick="startGame()">Iniciar Jogo</button>
   </div>
 
-  <script>
-    const player = document.getElementById('player');
-    const game = document.getElementById('game');
-    const scoreDisplay = document.getElementById('score');
-    let score = 0;
+  <canvas id="gameCanvas" width="800" height="300"></canvas>
 
-    function spawnHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      heart.style.left = Math.random() * (window.innerWidth - 40) + 'px';
-      heart.style.top = '-50px';
-      game.appendChild(heart);
+  <div id="gameOverScreen" style="display: none;">
+    <h1>Game Over!</h1>
+    <button onclick="restartGame()">Reiniciar</button>
+  </div>
+</div>
 
-      let fallInterval = setInterval(() => {
-        let top = parseFloat(heart.style.top);
-        heart.style.top = top + 3 + 'px';
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
 
-        const heartRect = heart.getBoundingClientRect();
-        const playerRect = player.getBoundingClientRect();
+  const girlImg = new Image();
+  girlImg.src = 'Alice.jpg';
 
-        if (
-          heartRect.bottom > playerRect.top &&
-          heartRect.top < playerRect.bottom &&
-          heartRect.left < playerRect.right &&
-          heartRect.right > playerRect.left
-        ) {
-          score++;
-          scoreDisplay.textContent = `Corações: ${score}`;
-          heart.remove();
-          clearInterval(fallInterval);
+  const motoImg = new Image();
+  motoImg.src = 'HondaBiz.jpg';
 
-          if (score >= 10) {
-            window.location.href = "corrida.html";
-          }
+  const jumpSound = new Audio('pulo.mp3');
+  const crashSound = new Audio('colisao.mp3');
+
+  let girl, motos, score, jumpedMotos, gameOver, gameLoop, motoSpawner;
+
+  function resetGame() {
+    girl = { x: 50, y: 220, width: 50, height: 50, dy: 0, jumping: false };
+    motos = [];
+    score = 0;
+    jumpedMotos = 0;
+    gameOver = false;
+  }
+
+  function drawGirl() {
+    ctx.drawImage(girlImg, girl.x, girl.y, girl.width, girl.height);
+  }
+
+  function drawMoto(moto) {
+    ctx.drawImage(motoImg, moto.x, moto.y, moto.width, moto.height);
+  }
+
+  function spawnMoto() {
+    motos.push({ x: canvas.width, y: 240, width: 50, height: 50 });
+  }
+
+  function update() {
+    if (gameOver) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#228B22';
+    ctx.fillRect(0, 270, canvas.width, 30);
+
+    if (girl.jumping) {
+      girl.dy += 1;
+      girl.y += girl.dy;
+      if (girl.y >= 220) {
+        girl.y = 220;
+        girl.dy = 0;
+        girl.jumping = false;
+      }
+    }
+    drawGirl();
+
+    for (let i = 0; i < motos.length; i++) {
+      motos[i].x -= 5;
+      drawMoto(motos[i]);
+
+      if (
+        girl.x < motos[i].x + motos[i].width &&
+        girl.x + girl.width > motos[i].x &&
+        girl.y < motos[i].y + motos[i].height &&
+        girl.y + girl.height > motos[i].y
+      ) {
+        if (crashSound) crashSound.play();
+        endGame();
+        return;
+      }
+
+      if (motos[i].x + motos[i].width < girl.x && !motos[i].counted) {
+        jumpedMotos++;
+        motos[i].counted = true;
+        if (jumpedMotos >= 5) {
+          window.location.href = 'pegapega.html';
+          gameOver = true;
+          return;
         }
-
-        if (top > window.innerHeight) {
-          heart.remove();
-          clearInterval(fallInterval);
-        }
-      }, 20);
+      }
     }
 
-    setInterval(spawnHeart, 1000);
+    motos = motos.filter(m => m.x + m.width > 0);
 
-    // Controle por toque
-    game.addEventListener('touchmove', e => {
-      const touch = e.touches[0];
-      player.style.left = touch.clientX - 30 + 'px';
-    });
-  </script>
+    ctx.fillStyle = '#000';
+    ctx.font = '20px Arial';
+    ctx.fillText('Pulos: ' + jumpedMotos + '/5', 10, 25);
+  }
+
+  function endGame() {
+    gameOver = true;
+    clearInterval(gameLoop);
+    clearInterval(motoSpawner);
+    document.getElementById('gameOverScreen').style.display = 'flex';
+  }
+
+  function jump() {
+    console.log('Jump function called');
+    if (!girl.jumping) {
+      girl.dy = -20;
+      girl.jumping = true;
+      if (jumpSound) jumpSound.play();
+    }
+  }
+
+  function startGame() {
+    resetGame();
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('gameOverScreen').style.display = 'none';
+    gameLoop = setInterval(update, 30);
+    motoSpawner = setInterval(spawnMoto, 2000);
+  }
+
+  function restartGame() {
+    startGame();
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.code === 'Space') jump();
+  });
+
+  canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    console.log('Touch event triggered');
+    jump();
+  }, { passive: false });
+
+  function resizeCanvas() {
+    const ratio = 800 / 300;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    let newWidth = width;
+    let newHeight = width / ratio;
+
+    if (newHeight > height) {
+      newHeight = height;
+      newWidth = height * ratio;
+    }
+
+    canvas.style.width = newWidth + 'px';
+    canvas.style.height = newHeight + 'px';
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('load', resizeCanvas);
+</script>
 </body>
 </html>
